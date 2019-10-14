@@ -92,13 +92,13 @@ class CycleGANModel(BaseModel):
     def test(self):
         real_A = Variable(self.input_A, volatile=True)
         fake_B = self.netG_A(real_A)
-        self.rec_A = self.netG_B(fake_B).data
-        self.fake_B = fake_B.data
+        self.rec_A = self.netG_B(fake_B)
+        self.fake_B = fake_B
 
         real_B = Variable(self.input_B, volatile=True)
         fake_A = self.netG_B(real_B)
-        self.rec_B = self.netG_A(fake_A).data
-        self.fake_A = fake_A.data
+        self.rec_B = self.netG_A(fake_A)
+        self.fake_A = fake_A
 
     # get image paths
     def get_image_paths(self):
@@ -120,12 +120,12 @@ class CycleGANModel(BaseModel):
     def backward_D_A(self):
         fake_B = self.fake_B_pool.query(self.fake_B)
         loss_D_A = self.backward_D_basic(self.netD_A, self.real_B, fake_B)
-        self.loss_D_A = loss_D_A.data[0]
+        self.loss_D_A = loss_D_A
 
     def backward_D_B(self):
         fake_A = self.fake_A_pool.query(self.fake_A)
         loss_D_B = self.backward_D_basic(self.netD_B, self.real_A, fake_A)
-        self.loss_D_B = loss_D_B.data[0]
+        self.loss_D_B = loss_D_B
 
     def backward_G(self):
         lambda_idt = self.opt.identity
@@ -140,10 +140,10 @@ class CycleGANModel(BaseModel):
             idt_B = self.netG_B(self.real_A)
             loss_idt_B = self.criterionIdt(idt_B, self.real_A) * lambda_A * lambda_idt
 
-            self.idt_A = idt_A.data
-            self.idt_B = idt_B.data
-            self.loss_idt_A = loss_idt_A.data[0]
-            self.loss_idt_B = loss_idt_B.data[0]
+            self.idt_A = idt_A
+            self.idt_B = idt_B
+            self.loss_idt_A = loss_idt_A
+            self.loss_idt_B = loss_idt_B
         else:
             loss_idt_A = 0
             loss_idt_B = 0
@@ -171,15 +171,15 @@ class CycleGANModel(BaseModel):
         loss_G = loss_G_A + loss_G_B + loss_cycle_A + loss_cycle_B + loss_idt_A + loss_idt_B
         loss_G.backward()
 
-        self.fake_B = fake_B.data
-        self.fake_A = fake_A.data
-        self.rec_A = rec_A.data
-        self.rec_B = rec_B.data
+        self.fake_B = fake_B
+        self.fake_A = fake_A
+        self.rec_A = rec_A
+        self.rec_B = rec_B
 
-        self.loss_G_A = loss_G_A.data[0]
-        self.loss_G_B = loss_G_B.data[0]
-        self.loss_cycle_A = loss_cycle_A.data[0]
-        self.loss_cycle_B = loss_cycle_B.data[0]
+        self.loss_G_A = loss_G_A
+        self.loss_G_B = loss_G_B
+        self.loss_cycle_A = loss_cycle_A
+        self.loss_cycle_B = loss_cycle_B
 
     def optimize_parameters(self):
         # forward
@@ -206,7 +206,7 @@ class CycleGANModel(BaseModel):
         return ret_errors
 
     def get_current_visuals(self):
-        real_A = util.tensor2im(self.input_A)
+        real_A = util.tensor2im(self.[input_A])
         fake_B = util.tensor2im(self.fake_B)
         rec_A = util.tensor2im(self.rec_A)
         real_B = util.tensor2im(self.input_B)
