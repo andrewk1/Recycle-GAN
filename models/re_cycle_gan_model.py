@@ -164,10 +164,10 @@ class ReCycleGANModel(BaseModel):
         else:
             fake_B2 = self.netP_B(torch.cat((fake_B0, fake_B1), 1))
 
-        self.rec_A = self.netG_B(fake_B2).data
-        self.fake_B0 = fake_B0.data
-        self.fake_B1 = fake_B1.data
-        self.fake_B2 = fake_B2.data
+        self.rec_A = self.netG_B(fake_B2)
+        self.fake_B0 = fake_B0
+        self.fake_B1 = fake_B1
+        self.fake_B2 = fake_B2
 
         real_B0 = Variable(self.input_B0, volatile=True)
         real_B1 = Variable(self.input_B1, volatile=True)
@@ -180,10 +180,10 @@ class ReCycleGANModel(BaseModel):
         else:
             fake_A2 = self.netP_A(torch.cat((fake_A0, fake_A1), 1))
 
-        self.rec_B = self.netG_A(fake_A2).data
-        self.fake_A0 = fake_A0.data
-        self.fake_A1 = fake_A1.data
-        self.fake_A2 = fake_A2.data
+        self.rec_B = self.netG_A(fake_A2)
+        self.fake_A0 = fake_A0
+        self.fake_A1 = fake_A1
+        self.fake_A2 = fake_A2
 
         # pred_A2 = self.netP_A(torch.cat((real_A0, real_A1),1))
         if self.which_model_netP == 'prediction':
@@ -191,7 +191,7 @@ class ReCycleGANModel(BaseModel):
         else:
             pred_A2 = self.netP_A(torch.cat((real_A0, real_A1), 1))
 
-        self.pred_A2 = pred_A2.data
+        self.pred_A2 = pred_A2
 
         # pred_B2 = self.netP_B(torch.cat((real_B0, real_B1),1))
         if self.which_model_netP == 'prediction':
@@ -199,7 +199,7 @@ class ReCycleGANModel(BaseModel):
         else:
             pred_B2 = self.netP_B(torch.cat((real_B0, real_B1), 1))
 
-        self.pred_B2 = pred_B2.data
+        self.pred_B2 = pred_B2
 
     # get image paths
     def get_image_paths(self):
@@ -231,8 +231,8 @@ class ReCycleGANModel(BaseModel):
         pred_B = self.fake_B_pool.query(self.pred_B2)
         loss_D_A3 = self.backward_D_basic(self.netD_A, self.real_B2, pred_B)
 
-        self.loss_D_A = loss_D_A0.data[0] + loss_D_A1.data[0] + loss_D_A2.data[
-            0] + loss_D_A3.data[0]
+        self.loss_D_A = loss_D_A0[0] + loss_D_A1[0] + loss_D_A2[
+            0] + loss_D_A3[0]
 
     def backward_D_B(self):
         fake_A0 = self.fake_A_pool.query(self.fake_A0)
@@ -247,8 +247,8 @@ class ReCycleGANModel(BaseModel):
         pred_A = self.fake_A_pool.query(self.pred_A2)
         loss_D_B3 = self.backward_D_basic(self.netD_B, self.real_A2, pred_A)
 
-        self.loss_D_B = loss_D_B0.data[0] + loss_D_B1.data[0] + loss_D_B2.data[
-            0] + loss_D_B3.data[0]
+        self.loss_D_B = loss_D_B0[0] + loss_D_B1[0] + loss_D_B2[
+            0] + loss_D_B3[0]
 
     def backward_G(self):
         lambda_idt = self.opt.identity
@@ -269,10 +269,10 @@ class ReCycleGANModel(BaseModel):
                                             self.real_A0) + self.criterionIdt(
                 idt_B1, self.real_A1)) * lambda_A * lambda_idt
 
-            self.idt_A = idt_A0.data
-            self.idt_B = idt_B0.data
-            self.loss_idt_A = loss_idt_A.data[0]
-            self.loss_idt_B = loss_idt_B.data[0]
+            self.idt_A = idt_A0
+            self.idt_B = idt_B0
+            self.loss_idt_A = loss_idt_A[0]
+            self.loss_idt_B = loss_idt_B[0]
 
         else:
             loss_idt_A = 0
@@ -358,30 +358,30 @@ class ReCycleGANModel(BaseModel):
         loss_G = loss_G_A0 + loss_G_A1 + loss_G_A2 + loss_G_B0 + loss_G_B1 + loss_G_B2 + loss_recycle_A + loss_recycle_B + loss_pred_A + loss_pred_B + loss_idt_A + loss_idt_B + loss_cycle_A0 + loss_cycle_A1 + loss_cycle_B0 + loss_cycle_B1
         loss_G.backward()
 
-        self.fake_B0 = fake_B0.data
-        self.fake_B1 = fake_B1.data
-        self.fake_B2 = fake_B2.data
-        self.pred_B2 = pred_B2.data
+        self.fake_B0 = fake_B0
+        self.fake_B1 = fake_B1
+        self.fake_B2 = fake_B2
+        self.pred_B2 = pred_B2
 
-        self.fake_A0 = fake_A0.data
-        self.fake_A1 = fake_A1.data
-        self.fake_A2 = fake_A2.data
-        self.pred_A2 = pred_A2.data
+        self.fake_A0 = fake_A0
+        self.fake_A1 = fake_A1
+        self.fake_A2 = fake_A2
+        self.pred_A2 = pred_A2
 
-        self.rec_A = rec_A.data
-        self.rec_B = rec_B.data
+        self.rec_A = rec_A
+        self.rec_B = rec_B
 
-        self.loss_G_A = loss_G_A0.data[0] + loss_G_A1.data[0] + loss_G_A2.data[
+        self.loss_G_A = loss_G_A0[0] + loss_G_A1[0] + loss_G_A2[
             0]
-        self.loss_G_B = loss_G_B0.data[0] + loss_G_B1.data[0] + loss_G_B2.data[
+        self.loss_G_B = loss_G_B0[0] + loss_G_B1[0] + loss_G_B2[
             0]
-        self.loss_recycle_A = loss_recycle_A.data[0]
-        self.loss_recycle_B = loss_recycle_B.data[0]
-        self.loss_pred_A = loss_pred_A.data[0]
-        self.loss_pred_B = loss_pred_B.data[0]
+        self.loss_recycle_A = loss_recycle_A[0]
+        self.loss_recycle_B = loss_recycle_B[0]
+        self.loss_pred_A = loss_pred_A[0]
+        self.loss_pred_B = loss_pred_B[0]
 
-        self.loss_cycle_A = loss_cycle_A0.data[0] + loss_cycle_A1.data[0]
-        self.loss_cycle_B = loss_cycle_B0.data[0] + loss_cycle_B1.data[0]
+        self.loss_cycle_A = loss_cycle_A0[0] + loss_cycle_A1[0]
+        self.loss_cycle_B = loss_cycle_B0[0] + loss_cycle_B1[0]
 
     def optimize_parameters(self):
         # forward
