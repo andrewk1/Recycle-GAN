@@ -231,8 +231,8 @@ class ReCycleGANModel(BaseModel):
         pred_B = self.fake_B_pool.query(self.pred_B2)
         loss_D_A3 = self.backward_D_basic(self.netD_A, self.real_B2, pred_B)
 
-        self.loss_D_A = loss_D_A0[0] + loss_D_A1[0] + loss_D_A2[
-            0] + loss_D_A3[0]
+        self.loss_D_A = loss_D_A0.detach()[0] + loss_D_A1.detach()[0] + loss_D_A2[
+            0] + loss_D_A3.detach()[0]
 
     def backward_D_B(self):
         fake_A0 = self.fake_A_pool.query(self.fake_A0)
@@ -247,8 +247,8 @@ class ReCycleGANModel(BaseModel):
         pred_A = self.fake_A_pool.query(self.pred_A2)
         loss_D_B3 = self.backward_D_basic(self.netD_B, self.real_A2, pred_A)
 
-        self.loss_D_B = loss_D_B0[0] + loss_D_B1[0] + loss_D_B2[
-            0] + loss_D_B3[0]
+        self.loss_D_B = loss_D_B0.detach()[0] + loss_D_B1.detach()[0] + loss_D_B2[
+            0] + loss_D_B3.detach()[0]
 
     def backward_G(self):
         lambda_idt = self.opt.identity
@@ -271,8 +271,8 @@ class ReCycleGANModel(BaseModel):
 
             self.idt_A = idt_A0
             self.idt_B = idt_B0
-            self.loss_idt_A = loss_idt_A[0]
-            self.loss_idt_B = loss_idt_B[0]
+            self.loss_idt_A = loss_idt_A.detach()[0]
+            self.loss_idt_B = loss_idt_B.detach()[0]
 
         else:
             loss_idt_A = 0
@@ -371,17 +371,17 @@ class ReCycleGANModel(BaseModel):
         self.rec_A = rec_A
         self.rec_B = rec_B
 
-        self.loss_G_A = loss_G_A0[0] + loss_G_A1[0] + loss_G_A2[
+        self.loss_G_A = loss_G_A0.detach()[0] + loss_G_A1.detach()[0] + loss_G_A2[
             0]
-        self.loss_G_B = loss_G_B0[0] + loss_G_B1[0] + loss_G_B2[
+        self.loss_G_B = loss_G_B0.detach()[0] + loss_G_B1.detach()[0] + loss_G_B2[
             0]
-        self.loss_recycle_A = loss_recycle_A[0]
-        self.loss_recycle_B = loss_recycle_B[0]
-        self.loss_pred_A = loss_pred_A[0]
-        self.loss_pred_B = loss_pred_B[0]
+        self.loss_recycle_A = loss_recycle_A.detach()[0]
+        self.loss_recycle_B = loss_recycle_B.detach()[0]
+        self.loss_pred_A = loss_pred_A.detach()[0]
+        self.loss_pred_B = loss_pred_B.detach()[0]
 
-        self.loss_cycle_A = loss_cycle_A0[0] + loss_cycle_A1[0]
-        self.loss_cycle_B = loss_cycle_B0[0] + loss_cycle_B1[0]
+        self.loss_cycle_A = loss_cycle_A0.detach()[0] + loss_cycle_A1.detach()[0]
+        self.loss_cycle_B = loss_cycle_B0.detach()[0] + loss_cycle_B1.detach()[0]
 
     def optimize_parameters(self):
         # forward
